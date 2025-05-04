@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中民晚會 - 互動式麥克風順序與劇本 (格式化)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 莫蘭迪色系 (淺色調) */
+        :root {
+            --morandi-bg-body: #f8f6f2; /* 主背景 - 淺米灰 */
+            --morandi-title-bg: #b0c4b1; /* 標題背景 - 灰綠 */
+            --morandi-title-text: #ffffff; /* 標題文字 - 白 */
+            --morandi-content-bg: #ffffff; /* 內容背景 - 白 */
+            --morandi-script-bg: #f5f5f5; /* 劇本背景 - 極淺灰 */
+            --morandi-border: #e0e0e0; /* 邊框/分隔線 - 淺灰 */
+            --morandi-text-main: #333333; /* 主要文字 - 深灰 (近黑) */
+            --morandi-text-subtitle: #222222; /* 子標題 - 更深灰 */
+            --morandi-text-actor: #111111; /* 演員名 - 近黑 */
+            --morandi-text-details: #555555; /* 細節文字 - 中灰 */
+            --morandi-highlight-mic: #8a7967; /* 麥克風動作 - 灰褐 */
+            --morandi-highlight-bold: #a07855; /* 粗體 (演員名) - 赤陶色 */
+            --morandi-highlight-italic: #6d8c80; /* 斜體 (笑點) - 灰藍綠 */
+            --morandi-code-bg: #dcd5c9; /* Code 背景 (動作) - 淺灰褐 */
+            --morandi-code-text: #5c5246; /* Code 文字 (動作) - 深灰褐 */
+            --morandi-info-label: #777777; /* Info 標籤 - 中灰 */
+            --morandi-punchline-bg: #e8e4db; /* 敲鑼人背景 - 稍深米灰 */
+            --morandi-note-text: #6b7280; /* 備註文字 */
+        }
+
+        /* 基本樣式 */
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            padding: 1rem;
+            background-color: var(--morandi-bg-body);
+            color: var(--morandi-text-main);
+            line-height: 1.7; /* 增加行高以便閱讀 */
+        }
+        /* 手風琴效果標題 */
+        .accordion-title {
+            cursor: pointer;
+            padding: 1rem;
+            background-color: var(--morandi-title-bg);
+            color: var(--morandi-title-text);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-title:hover {
+            filter: brightness(95%);
+        }
+        /* 內容區塊 */
+        .accordion-content {
+            padding: 1.5rem;
+            background-color: var(--morandi-content-bg);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+            border: 1px solid var(--morandi-border);
+        }
+        /* 內容子標題 */
+        .content-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--morandi-text-subtitle);
+            margin-bottom: 1rem; /* 增加與下方間距 */
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--morandi-border);
+        }
+        /* 劇本內容區塊 */
+        .script-content-html {
+            background-color: var(--morandi-script-bg);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.9rem;
+            color: var(--morandi-text-main);
+            margin-bottom: 1.5rem;
+            max-height: 450px; /* 稍微增加高度 */
+            overflow-y: auto;
+        }
+        /* Script Paragraph Base Style */
+        .script-content-html p {
+             margin-bottom: 0.5em; /* 段落間距 */
+             line-height: 1.6; /* 劇本內行高 */
+        }
+
+        /* 對話/動作項 (原 - 開頭) */
+        .script-dialogue-item {
+            margin-left: 1.5em; /* 凸排效果 */
+        }
+        /* 敲鑼人/笑點 */
+        .script-punchline-role {
+            background-color: var(--morandi-punchline-bg);
+            padding: 0.3em 0.6em;
+            border-radius: 0.25rem;
+            margin-left: 1em; /* 稍微縮排 */
+            display: inline-block; /* 讓背景只包覆文字 */
+            width: auto; /* 覆蓋 p 的預設寬度 */
+        }
+        .script-punchline-role .role-name {
+            font-weight: 700;
+            color: var(--morandi-text-subtitle); /* 角色名用深色 */
+        }
+        /* 場地/飾演人/道具等資訊 */
+        .script-info .info-label {
+            font-weight: 700;
+            color: var(--morandi-info-label); /* 標籤用灰色 */
+        }
+        /* 一般文字/未匹配的行 */
+        .script-general-text {
+             /* 可在此添加特定樣式，目前使用預設 p 樣式 */
+        }
+
+        /* 劇本中的動作描述樣式 (code tag) */
+        .script-content-html code {
+            background-color: var(--morandi-code-bg);
+            color: var(--morandi-code-text);
+            padding: 0.1em 0.4em;
+            border-radius: 0.25rem;
+            font-size: 0.85em;
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        }
+        /* 劇本中的粗體 (演員名) */
+         .script-content-html strong {
+            font-weight: 700;
+            color: var(--morandi-highlight-bold);
+         }
+        /* 劇本中的斜體 (笑點) */
+         .script-content-html em {
+            font-style: italic;
+            color: var(--morandi-highlight-italic);
+         }
+        /* 演員資訊區塊 */
+        .actor-info {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px dashed var(--morandi-border);
+        }
+        .actor-info:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .actor-name {
+            font-weight: 600;
+            color: var(--morandi-text-actor);
+        }
+        .actor-details {
+            font-size: 0.9rem;
+            color: var(--morandi-text-details);
+        }
+        .mic-action {
+            font-style: italic;
+            color: var(--morandi-highlight-mic);
+        }
+        /* 箭頭圖示 */
+        .arrow {
+            border: solid var(--morandi-title-text);
+            border-width: 0 2px 2px 0;
+            display: inline-block;
+            padding: 3px;
+            margin-left: 8px;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+        }
+        .arrow.up {
+            transform: rotate(-135deg);
+        }
+        /* 頁面標題 */
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--morandi-text-subtitle);
+        }
+        /* 備註 */
+        .scene-note {
+            font-size: 0.85rem;
+            color: var(--morandi-note-text);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--morandi-border);
+        }
+        /* 備註中的粗體 */
+        .scene-note strong {
+             color: var(--morandi-text-main); /* 備註標題用主要文字顏色 */
+             font-weight: 600;
+        }
+
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <h1>中民晚會 - 互動式麥克風順序與劇本</h1>
+
+    <div id="accordion-container">
+        </div>
+
+    <script>
+        // 劇本資料 (保持不變)
+        const scenes = [
+             { id: 1, name: "伸直器",
+              script: `場地布置:一張桌子、兩張椅子
+飾演人:2 男(A:**胡文騰**、B:**邱宥愷**)
+
+- A:\`坐在椅子上，把腳伸到桌子外\`
+- B:經過，問A 說幹嘛把腳伸這麼直
+- A:說因為這是我的伸直器阿。
+敲鑼人:*生殖器*
+
+- B:阿你不伸直會怎樣嗎
+- A:說會貶值阿
+敲鑼人*:貶值*
+
+- B:你知道你不把腳伸回去，絆倒別人會很嚴重嗎?
+- A:沒辦法啊，我是絆倒體
+敲鑼人:*絆倒體*`,
+              actors: [
+                { name: "胡文騰", direction: "右進右出", mic: "(Mic 1 給 張捷涵)" },
+                { name: "邱宥愷", direction: "左進左出", mic: "(Mic 2 給 郭禮安)" }
+              ], note: "M3, M4 Free" },
+            { id: 2, name: "DNA與比特犬",
+              script: `道具:AK47
+飾演人: 演DNA(**郭禮安**)、收容所員獸醫(**張捷涵**)、比特犬(**蔡兆治**)
+
+- DNA:大家好我是DNA我終於考到獸醫系了，我決定領養一隻狗勾!
+- 收容所獸醫:是DNA小姐嗎?請問你是想養大型犬還是小型犬呢?
+- DNA:我想養超兇的那種!
+- 比特犬:\`吠兩聲\`
+- DNA:欸~這有一隻比特犬可以養嘛!?
+- 比特犬:\`進場狂吠\`就憑你也配養老子，你去氧核醣核酸啦!
+敲鑼人:*去氧核醣核酸*
+
+- 收容所獸醫:這隻比特犬性格還是超差，就咬死幾個人而已不知道在秋甚麼?
+敲鑼人:*邱比特*
+
+比特犬:\`靠近DNA然後作勢咬他\`
+DNA:咬死人!?他這樣還可以領養嗎?
+比特犬:\`攻擊DNA(做動作不要直接接觸)\`
+收容所獸醫:就說不要靠近牠，他要被槍斃了!\`舉槍ㄅㄧㄤˋ\`
+敲鑼人:*比特斃*`,
+              actors: [
+                { name: "郭禮安", direction: "左進右出", mic: "(拿 Mic 2, 給 胡文騰)" },
+                { name: "張捷涵", direction: "右進左出", mic: "(拿 Mic 1, 給 邱宥愷)" },
+                { name: "蔡兆治", direction: "右進右出", mic: "(Mic 3, 保留)" }
+              ], note: "M4 Free" },
+            { id: 3, name: "大名鼎鼎",
+              script: `飾演人:兩人(小名:**宥愷**、大名:**文騰**)
+
+- 大名:跟小名說帶他去看一個秘密基地
+- 小名:說趕緊出發吧
+- 大名:走啊\`跳一下\`
+- 大名:說祕密基地以前沒這麼擠\`叫小名轉過去\`
+- \`大名頂小名\`
+- 小名:說ㄟ，幹!不要一直頂我啦\`最後一下需要用裡撞倒\`
+敲鑼人:*大名鼎鼎*
+
+- \`起身後\`
+- 小名:好像到盡頭了ㄟ\`做出摸牆的動作，示意前方沒路\`
+- \`往回走變小明頂大名\`過程中一樣重複幹不要一直頂我\`最後一樣要有一下最大力的撞倒在地\`
+敲鑼人:*鼎鼎大名*
+
+兩人:之後一直互換頂對方，噴垃圾話\`最後一樣要有一下最大力的撞倒在地\`
+敲鑼人:*鼎泰豐*`,
+              actors: [
+                { name: "邱宥愷", direction: "左進左出", mic: "(拿 Mic 1, 保留)" },
+                { name: "胡文騰", direction: "右進右出", mic: "(拿 Mic 2, 保留)" }
+              ], note: "蔡兆治(保留 M3 R出), M4 Free" },
+            { id: 4, name: "兄弟鬩牆",
+              script: `飾演人:一人演小強(**王綵章**)、弟弟(**邱宥愷**)、哥哥(**胡文騰**)、一名女生演妹妹馬力(**蔡兆治**)
+
+- 蟑螂:\`爬進場後，從兄弟後面川過當台前\`面對觀眾說他是一隻噁心的小強
+- 兄弟:弟弟叫哥哥看地板那是什麼東西，哥哥說ㄟ那三小，好噁心
+- \`小強飛到兩兄弟左邊\`
+- 弟弟:說不要飛過來啊，之後兩兄弟用手調戲小強
+敲鑼人:*兄弟鬩牆*
+
+- 妹妹:\`跑進舞台自我介紹\`大家好我是馬力，今年五歲，問兩個哥哥在幹嘛
+- 兄弟:叫馬力不能看，你年紀還太小，說那個東西很髒，不要看
+- 妹妹:說啊都不揪
+敲鑼人: *不約而同(兒童)*
+
+- 妹妹:我要看，我要看啦\`跑進兄弟之間\`
+- 兄弟:嘿嘿我們就不給你看
+- 妹妹:\`打兄弟各一拳\`
+敲鑼人: *瑪莉歐兄弟*`,
+              actors: [
+                { name: "王綵章", direction: "左進左出", mic: "(Mic 4, 保留)" },
+                { name: "邱宥愷", direction: "左進左出", mic: "(保留 Mic 1, 給 郭禮安)" },
+                { name: "胡文騰", direction: "右進右出", mic: "(保留 Mic 2, 給 張捷涵)" },
+                { name: "蔡兆治", direction: "右進右出", mic: "(保留 Mic 3, 給 劉品霆)" }
+              ], note: "全員皆有麥" },
+             { id: 5, name: "聖彼得大教堂",
+               script: `飾演人:彼得(**郭禮安**)、一個路人學生(**張捷涵**)、老師(**劉品霆**)
+
+- \`彼得頭稍微搖晃進場\`
+- 同學:早安!彼得，欸，你得臉色看起來很差欸
+- 彼得:因為我早上沒吃早餐，有點低血糖
+- \`老師進場\`
+- 老師:诶同學你氣色很差ㄟ，今天老師這有糖果請你吃
+- 同學:哇!這不是期間限定的…糖嗎?我要吃!\`搶走\`
+- 老師:ㄟㄟ同學!不准搶別人的糖(追上去)
+- 彼得:\`大叫\`我的糖啊!糖啊!糖…\`昏倒\`
+敲鑼人:*聖彼得大教堂*`,
+               actors: [
+                 { name: "郭禮安", direction: "左進右出", mic: "(拿 Mic 1, 給 蔡兆治)" },
+                 { name: "張捷涵", direction: "右進左出", mic: "(拿 Mic 2, 給 邱宥愷)" },
+                 { name: "劉品霆", direction: "右進左出", mic: "(拿 Mic 3, 保留)" }
+               ], note: "王綵章(保留 M4 L出) Free" },
+            { id: 6, name: "真的腳廢了",
+              script: `道具:假帳單、拐杖
+飾演人: 皇帝(**邱佑愷**)、超商店員和護理師(**劉品霆**)、超商店員和醫師(**王綵章**)
+
+皇帝:\`進場並自我介紹(注意語氣和氣場)然後拿起帳單\`今天朕要親自到超商繳費\`走近店裡\`
+店員B:歡迎光臨
+皇帝:朕要繳費
+店員B:會員載具有嗎?需要統編嗎?
+皇帝:朕要繳費\`繳費二字語氣加強一點\`
+店員A、B:\`皇說帝完”廢”字以後立刻拿道具K他腳\`
+皇帝:\`動作可以浮誇一點，抱著腳\`ㄟㄟㄟ不是，朕的腳廢了、朕的腳廢了
+敲鑼人:*真的腳廢了*
+
+- 店員:\`拿出拐杖地給皇帝，然後翻轉名牌，角色切換為護理師跟醫師\`
+- 皇帝:\`走進醫院\`朕的腳剛才被兩個刁民打得要廢掉了，欸你們兩個我好像在哪裡見過?
+- 醫師:你一定是太痛所以產生幻覺了，先來之止痛吧!\`護理師遞出針筒\`
+- 皇帝:大膽刁民!那支針筒也太大了
+- 護理師:笑死 皇帝竟然會怕打針噢”
+- 皇帝:不!你們竟敢...你們一定是想對朕下藥
+敲鑼人:*對朕下藥*`,
+              actors: [
+                { name: "邱宥愷", direction: "左進左出", mic: "(拿 Mic 2, 給 吳愷翹)" },
+                { name: "劉品霆", direction: "右進右出", mic: "(保留 Mic 3, 給 郭禮安)" },
+                { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" }
+              ], note: "郭禮安(M1 給 蔡 R出) Free" },
+            { id: 7, name: "打賴啦媽、隔代教養",
+              script: `道具:音樂(手機打電話鈴聲)
+飾演人:一個女生(**吳愷翹**) 、一個阿嬤(**蔡兆治**)
+
+- \`手機鈴聲響上台拿著手機接起電話\`阿嬤我不是跟你說電話費很貴嗎，打line 啦媽!
+敲鑼人:*達賴喇嗎(打賴啦媽)*
+
+- 孫女:阿嬤我回來了
+- 阿嬤:哦~金孫回來了
+- 孫女:阿嬤我的腳好癢喔
+- 阿嬤:孫ㄟ阿我的腳也很癢(用台語講)
+- 孫女跟阿嬤:重複 2 次(好癢喔、就癢ㄟ台語)
+敲鑼人:\`隔代教養(隔代叫癢)\``,
+              actors: [
+                { name: "吳愷翹", direction: "左進右出", mic: "(拿 Mic 2, 給 張捷涵)" },
+                { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 1, 給 胡文騰)" }
+              ], note: "劉品霆(M3 給 郭 L出), 王綵章(保留 M4 L出) Free" },
+            { id: 8, name: "你們的損失",
+              script: `場地布置:一張桌子、兩張椅子(接劇本1 的道具)、一瓶醬汁
+飾演人:一個男生、一個女生(男:**胡文騰**、女:**張捷涵**)、一個店員(**郭禮安**)
+
+- \`兩人:走上台坐下\`
+- 店員:送筍絲上來”這是免費送的小菜涼拌筍絲!”
+- 女生:可是我不喜歡涼拌欸
+- 店員:醬是你們的筍絲喔…
+敲鑼人:*你們的損失*
+
+- 男生:沒關係啦!醬我這有一瓶秘製醬汁要加嗎?
+- 女生:好啊好啊
+- \`男生一直加(這裡不要停)\`
+- 女生:太多了啦太多了啦
+敲鑼人:*你知道的太多了*`,
+              actors: [
+                { name: "胡文騰", direction: "右進右出", mic: "(拿 Mic 1, 給 蔡兆治)" },
+                { name: "張捷涵", direction: "右進左出", mic: "(拿 Mic 2, 給 邱宥愷)" },
+                { name: "郭禮安", direction: "左進左出", mic: "(拿 Mic 3, Free)" }
+              ], note: "王綵章(保留 M4 L出) Free" },
+            { id: 9, name: "先生不是小姐呼吸喔",
+              script: `飾演人:飼主(**邱宥愷**)一隻母的傲嬌比特犬(**蔡兆治**)、一個獸醫(**王綵章**)
+
+- 飼主:\`帶狗到醫院打疫苗\`我今天要帶我家邱比特來打狂犬病疫苗
+- 比特犬:\`要表現出桀傲不遜的一面，不情願地走到前面\`大聲叫獸醫兩聲
+- 獸醫:這個確定沒有感染嗎?只要要打疫苗就好嗎?
+- 飼主:你獸醫還是我獸醫阿!
+- 獸醫:好啦…我還是先幫你打疫苗好了
+- 獸醫:\`從口袋拿出針筒\`要下針嚕…先深呼吸喔~先深呼吸
+- 比特犬:老娘是小姐啦!討厭!
+
+敲鑼人:*先生...不是小姐呼吸喔*`,
+              actors: [
+                { name: "邱宥愷", direction: "左進左出", mic: "(拿 Mic 2, 給 郭禮安)" },
+                { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 1, 給 胡文騰)" },
+                { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" }
+              ], note: "郭禮安(M3 Free R出) Free" },
+            { id: 10, name: "可以粗麵",
+              script: `飾演人:拉麵店老闆(**胡文騰**)、客人(**郭禮安**)
+
+- 客人:老闆我要一份秘製陶板製燒豚骨拉麵!
+- 老闆:喔 秘製陶板製燒豚骨，所以你要一份蜜桃豚骨拉麵是嗎?
+- 客人:ㄟ不是但好像又是…不重要啦，老闆你推薦細麵還是粗麵?
+- 老闆:細麵就是比較細的麵阿
+- 客人:那粗麵呢?
+- 老闆:就是那格不想粗患的時候口以粗麵啊!
+敲鑼人:*可以粗麵*`,
+              actors: [
+                { name: "胡文騰", direction: "右進右出", mic: "(拿 Mic 1, 給 劉品霆)" },
+                { name: "郭禮安", direction: "左進左出", mic: "(拿 Mic 2, 給 邱宥愷)" }
+              ], note: "M3 Free, 王綵章(保留 M4 L出) Free" },
+            { id: 11, name: "多姨的人",
+              script: `飾演人:女生(**王綵章**)、男生(**劉品霆**)
+
+- 女生:吼喲!你昨天是不是又跟那個電話暱稱叫做”林森北地頭蛇”的人出門了!是不是你說!
+- 男生:沒有啊!我昨天不是很早就回家了嗎?
+- 女生:聽你在騙鬼啊!
+- 男生:為甚麼你總是要隨便懷疑別人阿?
+- 女生:就是因為我媽有八個姊妹啊!
+- 男生:不是阿，什麼意思?
+- 女生:意思就是我阿嬤生了九個女兒啊!你怎麼都不懂啊!
+- 男生;那又乾我甚麼事，有什麼關係?
+- 女生:所以我是個很多姨的人
+敲鑼人:*多姨的人*`,
+              actors: [
+                { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" },
+                { name: "劉品霆", direction: "右進右出", mic: "(拿 Mic 1, 給 吳愷翹)" }
+              ], note: "M2 Free, M3 Free" },
+            { id: 12, name: "怕馬生起司",
+              script: `飾演人:馬(**蔡兆治**)、餵馬的人(**吳愷翹**)、路人(**王綵章**)
+
+- 馬:\`吐舌頭(表現出很餓的樣子)\`
+- 餵馬的人:\`拿起司要餵馬\`
+- 路人:那匹馬懷孕了!不能吃乳酪啊!!
+- 餵馬的人:為甚麼?
+- 路人:俗話說吃什麼生什麼啊!
+- 餵馬的人:然後呢
+- 路人:我~\`拉長語氣\`
+敲鑼人:*怕馬生起司*`,
+              actors: [
+                { name: "蔡兆治", direction: "右進右出", mic: "(Mic 3, 給 劉品霆)" },
+                { name: "吳愷翹", direction: "左進左出", mic: "(拿 Mic 1, 保留)" },
+                { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" }
+              ], note: "M2 Free" },
+            { id: 13, name: "Lisa 蕭",
+              script: `飾演人:(1 男(**邱宥愷**) 1 女(**吳愷翹**)-同事關係)、一位男生飾演外國人(**劉品霆**)
+
+- 外國人:\`問女的名字叫什麼\`這位小姐叫什麼名子?
+- 男生:這是我同事，蕭小姐
+- 外國人:\`問女生\`請問你有英文名字嗎?
+- 女生:有啊!我叫Lisa
+- 外國人:Lisa 蕭
+- 女生:你才三小
+敲鑼人:*哩撒小*`,
+              actors: [
+                { name: "邱宥愷", direction: "左進左出", mic: "(拿 Mic 2, 給 郭禮安)" },
+                { name: "吳愷翹", direction: "左進右出", mic: "(保留 Mic 1, 給 蔡兆治)" },
+                { name: "劉品霆", direction: "右進右出", mic: "(拿 Mic 3, Free)" }
+              ], note: "王綵章(保留 M4 L出) Free" },
+            { id: 14, name: "金剛芭筆",
+              script: `道具:地上放一支筆
+飾演人:一個女生當金剛(**蔡兆治**)、筆(**王綵章**)
+
+- 金剛:進場時捶胸口，牽著筆，接著說這隻筆都不乖，然後芭那支筆，說壞筆筆壞筆筆
+
+敲鑼人:*金剛芭比(金剛芭筆)*`,
+              actors: [
+                { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 1, 給 張捷涵)" },
+                { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4, 給 劉品霆, if needed)" }
+              ], note: "若王不需麥, M4 Free. M2 Free, M3 Free." },
+             { id: 15, name: "重修舊好",
+               script: `飾演人:兩個女生(同學1:**郭禮安(沒過)**、同學2:**張捷涵(有過)**、老師(**劉品霆**)
+
+- 同學1:欸下一節課要公布數學期末考的成績了，你覺得你會考得如何
+- 同學2:我超緊張的，期中考已經炸了，我這次期末讀到快爆肝了一定沒問題的吧!
+- 同學1:那你應該喝一口這個\`拿出茶裏王\`
+- 同學2:蛤?茶裏王? 都已經熬夜了還喝這個做什麼?
+- 同學1:不是啦!是因為茶裏王…
+敲鑼人:*喝一口救回肝*
+
+- 老師:來公布成績了，一位有過，一位沒有過
+- 以為沒過的女生:蛤!(震驚語氣)老師說這樣要怎麼辦老師:那當然是~(拉長語氣)
+敲鑼人:*重修舊好*`,
+               actors: [
+                 { name: "郭禮安", direction: "左進右出", mic: "(拿 Mic 2, 結束)" },
+                 { name: "張捷涵", direction: "右進右出", mic: "(拿 Mic 1, 結束)" },
+                 { name: "劉品霆", direction: "右進右出", mic: "(拿 Mic 4, 結束)" }
+               ], note: "M3 Free." },
+            { id: 16, name: "謝幕",
+              script: `(全體演員上台謝幕)`, // 謝幕通常沒有固定劇本
+              actors: [ { name: "全員", direction: "依安排", mic: "(主持人安排)" } ], note: "" }
+        ];
+
+        const container = document.getElementById('accordion-container');
+
+        /**
+         * 將簡單的 Markdown 轉換為 HTML，並應用樣式類別
+         * @param {string} text - 包含 Markdown 的文字
+         * @returns {string} - 轉換後的 HTML 字串
+         */
+        function markdownToHtml(text) {
+            if (!text) return '';
+            const lines = text.split('\n');
+            let html = '';
+
+            lines.forEach(line => {
+                let processedLine = line; // 保留原始行以處理縮進前的內容
+
+                // 預先處理 HTML 特殊字符
+                processedLine = processedLine.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                const trimmedLine = line.trim(); // 用於模式匹配
+
+                if (trimmedLine === '') {
+                    html += '<br>'; // 保留空行
+                } else if (trimmedLine.startsWith('- ')) {
+                    // 對話或動作項
+                    let content = processedLine.substring(processedLine.indexOf('- ') + 2);
+                    content = content.replace(/`(.*?)`/g, '<code>$1</code>');
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                    html += `<p class="script-dialogue-item">${content}</p>`;
+                } else if (trimmedLine.startsWith('敲鑼人:')) {
+                    // 敲鑼人/笑點
+                    let content = processedLine.substring(processedLine.indexOf(':') + 1).trim();
+                    content = content.replace(/\*(.*?)\*/g, '<em>$1</em>'); // 強調笑點
+                    html += `<p class="script-punchline-role"><span class="role-name">敲鑼人:</span> ${content}</p>`;
+                } else if (/^(場地布置:|飾演人:|道具:)/.test(trimmedLine)) {
+                    // 特定資訊行
+                     const parts = processedLine.split(':');
+                     const label = parts[0].trim();
+                     let value = parts.slice(1).join(':').trim();
+                     value = value.replace(/`(.*?)`/g, '<code>$1</code>');
+                     value = value.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                     value = value.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                     html += `<p class="script-info"><strong class="info-label">${label}:</strong> ${value}</p>`;
+                 } else {
+                    // 一般文字/未匹配行
+                    let content = processedLine;
+                    content = content.replace(/`(.*?)`/g, '<code>$1</code>');
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                    html += `<p class="script-general-text">${content}</p>`;
+                }
+            });
+
+            return html;
+        }
+
+
+        // 產生 HTML 內容
+        scenes.forEach(scene => {
+            const sceneDiv = document.createElement('div');
+
+            // 標題
+            const titleDiv = document.createElement('div');
+            titleDiv.classList.add('accordion-title');
+            titleDiv.innerHTML = `
+                <span>劇本 ${scene.id}: ${scene.name}</span>
+                <span class="arrow"></span>
+            `;
+
+            // 內容
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('accordion-content');
+
+            // -- 劇本內容 --
+            const scriptTitle = document.createElement('h4');
+            scriptTitle.classList.add('content-subtitle');
+            scriptTitle.textContent = '劇本內容';
+            contentDiv.appendChild(scriptTitle);
+
+            // 使用轉換後的 HTML
+            const scriptHtmlDiv = document.createElement('div');
+            scriptHtmlDiv.classList.add('script-content-html');
+            scriptHtmlDiv.innerHTML = markdownToHtml(scene.script); // 使用轉換函式
+            contentDiv.appendChild(scriptHtmlDiv);
+
+            // -- 演員與麥克風 --
+            const actorTitle = document.createElement('h4');
+            actorTitle.classList.add('content-subtitle');
+            actorTitle.textContent = '演員與麥克風';
+            contentDiv.appendChild(actorTitle);
+
+            scene.actors.forEach(actor => {
+                const actorDiv = document.createElement('div');
+                actorDiv.classList.add('actor-info');
+                actorDiv.innerHTML = `
+                    <div class="actor-name">${actor.name}</div>
+                    <div class="actor-details">方向: ${actor.direction}</div>
+                    <div class="actor-details">麥克風: <span class="mic-action">${actor.mic}</span></div>
+                `;
+                contentDiv.appendChild(actorDiv);
+            });
+
+            // -- 備註 --
+            if (scene.note) {
+                 const noteP = document.createElement('p');
+                 noteP.classList.add('scene-note');
+                 // 讓備註標題也用特定樣式
+                 noteP.innerHTML = `<strong class="info-label">備註:</strong> ${scene.note}`;
+                 contentDiv.appendChild(noteP);
+            }
+
+            sceneDiv.appendChild(titleDiv);
+            sceneDiv.appendChild(contentDiv);
+            container.appendChild(sceneDiv);
+
+            // 加入點擊事件監聽
+            titleDiv.addEventListener('click', () => {
+                const isVisible = contentDiv.style.display === 'block';
+                contentDiv.style.display = isVisible ? 'none' : 'block';
+                titleDiv.querySelector('.arrow').classList.toggle('up', !isVisible);
+            });
+        });
+
+    </script>
+
+</body>
+</html>
