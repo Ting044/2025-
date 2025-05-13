@@ -6,7 +6,7 @@
     <title>中民晚會 - 互動式麥克風順序、劇本與音效 (MP3)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 莫蘭迪色系 (淺色調) - 樣式保持不變 */
+        /* 莫蘭迪色系 (淺色調) */
         :root {
             --morandi-bg-body: #f8f6f2; /* 主背景 - 淺米灰 */
             --morandi-title-bg: #b0c4b1; /* 標題背景 - 灰綠 */
@@ -103,9 +103,8 @@
             font-weight: 700;
             color: var(--morandi-info-label);
         }
-        .script-general-text {
-             /* No special style needed */
-        }
+        /* .script-general-text 規則已移除 */
+
         .script-content-html code {
             background-color: var(--morandi-code-bg);
             color: var(--morandi-code-text);
@@ -219,7 +218,7 @@
     <audio id="audio-player" style="display: none;"></audio>
 
     <script>
-        // --- Scene Data (包含 MP3 URL 佔位符) ---
+        // --- Scene Data (Updated with new script content and mic sequences) ---
         const scenes = [
             { id: 1, name: "伸直器", soundEffect: "無",
               script: `場地布置:一張桌子、兩張椅子
@@ -241,7 +240,7 @@
                   { name: "胡文騰", direction: "右進右出", mic: "(Mic 1 給 張捷涵)" },
                   { name: "邱宥愷", direction: "左進左出", mic: "(Mic 2 給 郭禮安)" }
               ], note: "M3, M4 Free" },
-            { id: 2, name: "DNA與比特犬", soundEffect: "三聲槍聲", soundUrl: 'https://ting044.github.io/2025-/中民音效/2_三槍.mp3', // <-- 替換這裡的網址
+            { id: 2, name: "DNA與比特犬", soundEffect: "三聲槍聲", soundUrl: '音效檔網址/gunshots.mp3',
               script: `道具:AK47
 飾演人: 演DNA(**郭禮安**)、收容所員獸醫(**張捷涵**)、比特犬(**蔡兆治**)
 
@@ -329,7 +328,7 @@ DNA:咬死人!?他這樣還可以領養嗎?
                    { name: "張捷涵", direction: "右進左出", mic: "(拿 Mic 2, 給 邱宥愷)" },
                    { name: "劉品霆", direction: "右進右出", mic: "(拿 Mic 3, 保留)" }
                ], note: "王綵章(保留 M4 L出) Free" },
-            { id: 6, name: "真的腳廢了", soundEffect: "7-11便利商店開門聲", soundUrl: 'https://ting044.github.io/2025-/6_7-11音效.mp3', // <-- 替換這裡的網址
+            { id: 6, name: "真的腳廢了", soundEffect: "7-11便利商店開門聲", soundUrl: '音效檔網址/door_chime.mp3',
               script: `道具:假帳單、拐杖
 飾演人: 皇帝(**邱佑愷**)、超商店員和護理師(**劉品霆**)、超商店員和醫師(**王綵章**)
 
@@ -354,7 +353,7 @@ DNA:咬死人!?他這樣還可以領養嗎?
                   { name: "劉品霆", direction: "右進左出", mic: "(保留 Mic 3, 給 郭禮安)" },
                   { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" }
               ], note: "郭禮安(M1 給 蔡 R出) Free" },
-            { id: 7, name: "打賴啦媽、隔代教養", soundEffect: "電話蟲", soundUrl: 'https://ting044.github.io/2025-/7_電話蟲.mp3', // <-- 替換這裡的網址
+            { id: 7, name: "打賴啦媽、隔代教養", soundEffect: "無",
               script: `道具:音樂(手機打電話鈴聲)
 飾演人:一個女生(**吳愷翹**) 、一個阿嬤(**蔡兆治**)
 
@@ -391,8 +390,24 @@ DNA:咬死人!?他這樣還可以領養嗎?
                   { name: "張捷涵", direction: "右進左出 (繞後台至右)", mic: "(拿 Mic 2, 給 邱宥愷)" },
                   { name: "郭禮安", direction: "左進右出", mic: "(拿 Mic 3, Free)" }
               ], note: "王綵章(保留 M4 L出) Free" },
-            { id: 9, name: "免疫細胞", soundEffect: "無",
-              script: `飾演人:血小板(**邱宥愷**)、紅血球(**蔡兆治**)、白血球(**王綵章**)
+            { id: 9, name: "不是先生", soundEffect: "無",
+              script: `飾演人:飼主(**邱宥愷**)一隻母的傲嬌比特犬(**蔡兆治**)、一個獸醫(**王綵章**)
+
+飼主帶狗到醫院打疫苗，跟獸醫說:我今天要帶我家邱比特來打狂犬病疫苗
+比特犬:要表現出桀傲不遜的一面，不情願地走到前面，然後大聲叫獸醫兩聲
+獸醫:這個確定沒有感染嗎?只要要打疫苗就好嗎?
+飼主:你獸醫還是我獸醫阿(嗆他)
+獸醫:好啦…我還是先幫你打疫苗好了
+獸醫:從口袋拿出針筒)，要下針嚕…先深呼吸喔~先深呼吸
+比特犬:老娘是小姐啦!討厭!
+敲鑼人:*不是先生*`,
+              actors: [
+                  { name: "邱宥愷", direction: "左進左出", mic: "(保留 Mic 2)" },
+                  { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 1, 給 胡文騰)" },
+                  { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" }
+              ], note: "郭禮安(M3 Free R出) Free" },
+            { id: 10, name: "免疫細胞", soundEffect: "無",
+              script: `飾演人:血小板(**張捷涵**)、紅血球(**蔡兆治**)、白血球(**王綵章**)
 
 \`同時進場輪流自我介紹\`
 - 血小板:吼...好補容易熬過大學5年，讀這麼多書結果畢業要去當兵啊，你說是不是，紅血球?
@@ -402,24 +417,10 @@ DNA:咬死人!?他這樣還可以領養嗎?
 - 白血球:因為我是...
 敲鑼人:*免疫細胞*`,
               actors: [
-                  { name: "邱宥愷", direction: "左進左出", mic: "(保留 Mic 2)" },
-                  { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 1, 給 胡文騰)" },
-                  { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" }
-              ], note: "郭禮安(M3 Free R出) Free" },
-            { id: 10, name: "可以粗麵", soundEffect: "無",
-              script: `飾演人:拉麵店老闆(**胡文騰**)、客人(**郭禮安**)
-
-- 客人:老闆我要一份秘製陶板製燒豚骨拉麵!
-- 老闆:喔 秘製陶板製燒豚骨，所以你要一份蜜桃豚骨拉麵是嗎?
-- 客人:ㄟ不是但好像又是…不重要啦，老闆你推薦細麵還是粗麵?
-- 老闆:細麵就是比較細的麵阿
-- 客人:那粗麵呢?
-- 老闆:就是那格不想粗患的時候口以粗麵啊!
-敲鑼人:*可以粗麵*`,
-              actors: [
-                  { name: "胡文騰", direction: "右進右出", mic: "(拿 Mic 1, 給 劉品霆)" },
-                  { name: "郭禮安", direction: "左進左出", mic: "(拿 Mic 3, 給 蔡兆治)" }
-              ], note: "邱宥愷(M2 Free R出), 王綵章(保留 M4 L出) Free" },
+                  { name: "張捷涵", direction: "左進左出", mic: "(拿 Mic 2 from 邱宥愷)" }, // 邱宥愷 S9 左出持 M2
+                  { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 3 from 郭禮安, 保留)" }, // 郭禮安 S8 左出，M3 Free。蔡兆治保留供S12
+                  { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" } // 王綵章 S9 左出持 M4
+              ], note: "胡文騰(M1 R出 from S9) Free. Mic 3 保留 by 蔡兆治." },
             { id: 11, name: "多姨的人", soundEffect: "無",
               script: `飾演人:女生(**王綵章**)、男生(**劉品霆**)
 
@@ -435,9 +436,9 @@ DNA:咬死人!?他這樣還可以領養嗎?
 敲鑼人:*多姨的人*`,
               actors: [
                   { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" },
-                  { name: "劉品霆", direction: "右進右出", mic: "(拿 Mic 1, 給 吳愷翹)" }
-              ], note: "M2 Free, M3 Free" },
-            { id: 12, name: "怕馬生起司", soundEffect: "馬叫聲", soundUrl: 'https://ting044.github.io/2025-/12_馬叫.mp3', // <-- 替換這裡的網址
+                  { name: "劉品霆", direction: "右進右出", mic: "(拿 Mic 1 from 胡文騰)" } // 胡文騰 S9 右出持 M1
+              ], note: "M2 (張捷涵 L出), M3 (蔡兆治 R出, 保留) Free for others" },
+            { id: 12, name: "怕馬生起司", soundEffect: "馬叫聲", soundUrl: '音效檔網址/horse_neigh.mp3',
               script: `飾演人:馬(**蔡兆治**)、餵馬的人(**吳愷翹**)、路人(**王綵章**)
 
 - 馬:\`吐舌頭(表現出很餓的樣子)\`
@@ -449,8 +450,8 @@ DNA:咬死人!?他這樣還可以領養嗎?
 - 路人:我~\`拉長語氣\`
 敲鑼人:*怕馬生起司*`,
               actors: [
-                  { name: "蔡兆治", direction: "右進右出", mic: "(Mic 3, 給 劉品霆)" },
-                  { name: "吳愷翹", direction: "左進左出", mic: "(保留 Mic 1)" },
+                  { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 3, 給 劉品霆)" }, // 從 S10 保留下來
+                  { name: "吳愷翹", direction: "左進左出", mic: "(保留 Mic 1)" }, // Mic 1 從 S11 劉品霆處來
                   { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" }
               ], note: "M2 Free" },
             { id: 13, name: "Lisa 蕭", soundEffect: "無",
@@ -464,10 +465,10 @@ DNA:咬死人!?他這樣還可以領養嗎?
 - 女生:你才三小
 敲鑼人:*哩撒小*`,
               actors: [
-                  { name: "邱宥愷", direction: "左進左出", mic: "(拿 Mic 2, 給 郭禮安)" },
-                  { name: "吳愷翹", direction: "左進右出", mic: "(保留 Mic 1, 給 蔡兆治)" },
-                  { name: "劉品霆", direction: "右進右出", mic: "(拿 Mic 3, Free)" }
-              ], note: "王綵章(保留 M4 L出) Free" },
+                  { name: "邱宥愷", direction: "左進左出", mic: "(拿 Mic 2, 給 郭禮安)" }, // M2 from S10 張捷涵 L出
+                  { name: "吳愷翹", direction: "左進左出", mic: "(保留 Mic 1, 給 蔡兆治)" }, // M1 from S12 保留
+                  { name: "劉品霆", direction: "右進右出", mic: "(拿 Mic 3, 保留)" } // M3 from S12 蔡兆治 R出
+              ], note: "王綵章(保留 M4 L出) Free. Mic 3 保留 by 劉品霆." },
             { id: 14, name: "金剛芭筆", soundEffect: "無",
               script: `道具:地上放一支筆
 飾演人:一個女生當金剛(**蔡兆治**)、筆(**王綵章**)
@@ -476,10 +477,10 @@ DNA:咬死人!?他這樣還可以領養嗎?
 
 敲鑼人:*金剛芭比(金剛芭筆)*`,
               actors: [
-                  { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 1, 給 張捷涵)" },
+                  { name: "蔡兆治", direction: "右進右出", mic: "(拿 Mic 1 from 吳愷翹, 給 張捷涵)" }, // M1 from S13 吳愷翹 L出 (衝突點)
                   { name: "王綵章", direction: "左進左出", mic: "(保留 Mic 4)" }
-              ], note: "M2 Free, M3 Free." },
-             { id: 15, name: "重修舊好", soundEffect: "多拉A夢百寶袋", soundUrl: 'https://ting044.github.io/2025-/15_哆啦A夢音效.mp3', // <-- 替換這裡的網址
+              ], note: "M2 (邱宥愷 L出 from S13) Free, M3 (劉品霆 L出 from S13, 保留) Free for others." },
+             { id: 15, name: "重修舊好", soundEffect: "多拉A夢百寶袋", soundUrl: '音效檔網址/doraemon.mp3',
                script: `飾演人:兩個女生(同學1:**郭禮安(沒過)**、同學2:**張捷涵(有過)**、老師(**劉品霆**)
 
 - 同學1:欸下一節課要公布數學期末考的成績了，你覺得你會考得如何
@@ -493,23 +494,18 @@ DNA:咬死人!?他這樣還可以領養嗎?
 - 以為沒過的女生:蛤!(震驚語氣)老師說這樣要怎麼辦老師:那當然是~(拉長語氣)
 敲鑼人:*重修舊好*`,
                actors: [
-                   { name: "郭禮安", direction: "右進右出", mic: "(拿 Mic 2, 結束)" },
-                   { name: "張捷涵", direction: "右進左出", mic: "(拿 Mic 1, 結束)" },
-                   { name: "劉品霆", direction: "右進左出", mic: "(拿 Mic 3, 結束)" }
-               ], note: "M3 Free." },
+                   { name: "郭禮安", direction: "右進右出", mic: "(拿 Mic 2 from 邱宥愷, 結束)" }, // M2 from S13 邱宥愷 L出 (衝突點)
+                   { name: "張捷涵", direction: "右進左出", mic: "(拿 Mic 1 from 蔡兆治, 結束)" }, // M1 from S14 蔡兆治 R出
+                   { name: "劉品霆", direction: "右進左出", mic: "(拿 Mic 3, 結束)" } // M3 from S13 保留
+               ], note: "M4 (王綵章 L出 from S14) Free." },
             { id: 16, name: "謝幕", soundEffect: "無",
               script: `(全體演員上台謝幕)`,
               actors: [ { name: "全員", direction: "依安排", mic: "(主持人安排)" } ], note: "" }
         ];
 
         const container = document.getElementById('accordion-container');
-        const audioPlayer = document.getElementById('audio-player'); // 獲取 audio 元素
+        const audioPlayer = document.getElementById('audio-player');
 
-        /**
-         * 將簡單的 Markdown 轉換為 HTML，並應用樣式類別
-         * @param {string} text - 包含 Markdown 的文字
-         * @returns {string} - 轉換後的 HTML 字串
-         */
         function markdownToHtml(text) {
             if (!text) return '';
             const lines = text.split('\n');
@@ -539,26 +535,33 @@ DNA:咬死人!?他這樣還可以領養嗎?
                      value = value.replace(/`(.*?)`/g, '<code>$1</code>');
                      value = value.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
                      value = value.replace(/(?<!\*)\*(?!\s|[:*])([^ *].*?[^ *])\*(?!\*)/g, '<em>$1</em>');
-                     if (!label.startsWith('音效')) {
+                     if (!label.startsWith('音效')) { // 音效欄位單獨處理
                         html += `<p class="script-info"><strong class="info-label">${label}:</strong> ${value}</p>`;
                      }
-                 } else {
+                 } else { // 一般文字或未明確標記的演員對話
                     let content = processedLine;
-                    content = content.replace(/`(.*?)`/g, '<code>$1</code>');
-                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                    content = content.replace(/(?<!\*)\*(?!\s|[:*])([^ *].*?[^ *])\*(?!\*)/g, '<em>$1</em>');
-                    html += `<p class="script-general-text">${content}</p>`;
+                    // 檢查是否可能是角色名: 對話 的格式
+                    const dialogueMatch = content.match(/^([^:`*]+?):\s*(.*)/);
+                    if (dialogueMatch) {
+                        let roleName = dialogueMatch[1].trim();
+                        let dialogueText = dialogueMatch[2].trim();
+                        dialogueText = dialogueText.replace(/`(.*?)`/g, '<code>$1</code>');
+                        dialogueText = dialogueText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        dialogueText = dialogueText.replace(/(?<!\*)\*(?!\s|[:*])([^ *].*?[^ *])\*(?!\*)/g, '<em>$1</em>');
+                        html += `<p class="script-dialogue-item"><strong>${roleName}:</strong> ${dialogueText}</p>`;
+                    } else {
+                        content = content.replace(/`(.*?)`/g, '<code>$1</code>');
+                        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        content = content.replace(/(?<!\*)\*(?!\s|[:*])([^ *].*?[^ *])\*(?!\*)/g, '<em>$1</em>');
+                        html += `<p class="script-general-text">${content}</p>`;
+                    }
                 }
             });
             return html;
         }
 
-
-        // 產生 HTML 內容
         scenes.forEach(scene => {
             const sceneDiv = document.createElement('div');
-
-            // 標題
             const titleDiv = document.createElement('div');
             titleDiv.classList.add('accordion-title');
             titleDiv.innerHTML = `
@@ -566,25 +569,20 @@ DNA:咬死人!?他這樣還可以領養嗎?
                 <span class="arrow"></span>
             `;
 
-            // 內容
             const contentDiv = document.createElement('div');
             contentDiv.classList.add('accordion-content');
 
-            // -- 音效 --
             if (scene.soundEffect) {
                 const soundDiv = document.createElement('div');
                 soundDiv.classList.add('sound-effect-section');
                 let soundHTML = `<strong class="info-label">音效:</strong> ${scene.soundEffect}`;
-                // 只有在有 soundUrl 的情況下才顯示播放按鈕
                 if (scene.soundEffect !== "無" && scene.soundUrl) {
-                    // 將 soundUrl 儲存在按鈕的 data 屬性中
                     soundHTML += `<button class="play-sound-button" data-sound-url="${scene.soundUrl}">播放</button>`;
                 }
                 soundDiv.innerHTML = soundHTML;
                 contentDiv.appendChild(soundDiv);
             }
 
-            // -- 劇本內容 --
             const scriptTitle = document.createElement('h4');
             scriptTitle.classList.add('content-subtitle');
             scriptTitle.textContent = '劇本內容';
@@ -595,7 +593,6 @@ DNA:咬死人!?他這樣還可以領養嗎?
             scriptHtmlDiv.innerHTML = markdownToHtml(scene.script);
             contentDiv.appendChild(scriptHtmlDiv);
 
-            // -- 演員與麥克風 --
             const actorTitle = document.createElement('h4');
             actorTitle.classList.add('content-subtitle');
             actorTitle.textContent = '演員與麥克風';
@@ -612,7 +609,6 @@ DNA:咬死人!?他這樣還可以領養嗎?
                 contentDiv.appendChild(actorDiv);
             });
 
-            // -- 備註 --
             if (scene.note) {
                  const noteP = document.createElement('p');
                  noteP.classList.add('scene-note');
@@ -624,33 +620,28 @@ DNA:咬死人!?他這樣還可以領養嗎?
             sceneDiv.appendChild(contentDiv);
             container.appendChild(sceneDiv);
 
-            // 加入點擊事件監聽 (標題)
             titleDiv.addEventListener('click', () => {
                 const isVisible = contentDiv.style.display === 'block';
                 contentDiv.style.display = isVisible ? 'none' : 'block';
                 titleDiv.querySelector('.arrow').classList.toggle('up', !isVisible);
             });
 
-             // 加入點擊事件監聽 (音效按鈕)
             const soundButton = contentDiv.querySelector('.play-sound-button');
             if (soundButton) {
                 soundButton.addEventListener('click', (event) => {
-                    event.stopPropagation(); // 防止觸發標題的點擊事件
+                    event.stopPropagation();
                     const soundUrl = event.target.dataset.soundUrl;
-                    if (soundUrl && soundUrl !== '音效檔網址/placeholder.mp3') { // 檢查 URL 是否有效
-                        audioPlayer.src = soundUrl; // 設定音效來源
-                        audioPlayer.play().catch(e => console.error("音效播放錯誤:", e)); // 播放並捕捉錯誤
+                    if (soundUrl && !soundUrl.startsWith('音效檔網址')) {
+                        audioPlayer.src = soundUrl;
+                        audioPlayer.play().catch(e => console.error("音效播放錯誤:", e));
                         console.log("播放音效:", soundUrl);
                     } else {
-                        console.warn("無效的音效網址:", soundUrl);
-                        // 可以選擇在這裡給用戶一個提示，例如彈出一個小訊息
-                        alert("尚未設定此音效的 MP3 檔案網址！");
+                        console.warn("無效或未設定的音效網址:", soundUrl);
+                        alert("尚未設定此音效的 MP3 檔案網址！請檢查程式碼中的 'soundUrl'。");
                     }
                 });
             }
         });
-
     </script>
-
 </body>
 </html>
